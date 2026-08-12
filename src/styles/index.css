@@ -1,0 +1,13 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html, body, #root {
+  height: 100%;
+}
+
+/* 期限が近いアイテムを強調するクラスの例 */
+.expiring {
+  border-left-width: 4px;
+  border-left-color: #f87171; /* 赤 */
+}
