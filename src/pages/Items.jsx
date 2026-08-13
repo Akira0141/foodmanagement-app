@@ -25,8 +25,8 @@ export default function ItemsPage(){
 
   // 保存場所のロケーション定義
   const locationOptions = [
-    { label: '冷蔵庫', emoji: '❄️', color: 'bg-blue-50 border-blue-200' },
-    { label: '冷凍庫', emoji: '🧊', color: 'bg-cyan-50 border-cyan-200' },
+    { label: '冷蔵庫', emoji: '🧊', color: 'bg-blue-50 border-blue-200' },
+    { label: '冷凍庫', emoji: '❄️', color: 'bg-cyan-50 border-cyan-200' },
     { label: 'ストッカー', emoji: '📦', color: 'bg-amber-50 border-amber-200' }
   ]
 
@@ -250,11 +250,6 @@ export default function ItemsPage(){
 
   const nearExpiryCount = filteredItems.filter(item => getExpiryState(item.expires_at) !== 'normal').length
 
-  const getWeekdayString = (dateStr) => {
-    if (!dateStr) return ''
-    return new Date(`${dateStr}T00:00:00`).toLocaleDateString('ja-JP', { weekday: 'short' })
-  }
-
   return (
     <div className="p-6 emoji-wallpaper min-h-screen">
       <div className="max-w-5xl mx-auto">
@@ -317,24 +312,32 @@ export default function ItemsPage(){
             <input className="border p-2 rounded" placeholder="数量" value={quantity} onChange={e=>setQuantity(e.target.value)} />
             <input className="border p-2 rounded" placeholder="単位" value={unit} onChange={e=>setUnit(e.target.value)} />
             <div className="flex items-center gap-2">
-              <select value={location} onChange={e=>setLocation(e.target.value)} className="border p-2 rounded bg-white flex-1">
-                <option value="">保管場所を選択</option>
+              <input 
+                type="text"
+                list="locationList"
+                value={location}
+                onChange={e => setLocation(e.target.value)}
+                placeholder="保管場所を入力または選択"
+                className="border p-2 rounded bg-white flex-1"
+              />
+              <datalist id="locationList">
                 {locationOptions.map(opt => (
                   <option key={opt.label} value={opt.label}>{opt.emoji} {opt.label}</option>
                 ))}
-              </select>
+              </datalist>
             </div>
-            <div className="flex items-center gap-1">
-              <input type="date" className="border p-2 rounded" value={purchasedAt} onChange={e=>setPurchasedAt(e.target.value)} />
-              {purchasedAt && (
-                <span className="text-sm text-gray-600">（{getWeekdayString(purchasedAt)}）</span>
-              )}
-            </div>
-            <div className="flex items-center gap-1">
-              <input type="date" className="border p-2 rounded" value={expiresAt} onChange={e=>setExpiresAt(e.target.value)} />
-              {expiresAt && (
-                <span className="text-sm text-gray-600">（{getWeekdayString(expiresAt)}）</span>
-              )}
+            <div className="md:col-span-3">
+              <div className="flex gap-4 items-start">
+                <div className="flex-1">
+                  <label className="text-xs text-gray-600 font-semibold">購入日</label>
+                  <input type="date" className="w-full border p-2 rounded" value={purchasedAt} onChange={e=>setPurchasedAt(e.target.value)} />
+                </div>
+                <div className="flex-1">
+                  <label className="text-xs text-gray-600 font-semibold">賞味期限</label>
+                  <input type="date" className="w-full border p-2 rounded" value={expiresAt} onChange={e=>setExpiresAt(e.target.value)} />
+                </div>
+              </div>
+              <p className="text-xs text-red-600 mt-1">※賞味期限が未入力の場合、3日後の日付が登録されます</p>
             </div>
             <input className="md:col-span-3 border p-2 rounded" placeholder="メモ" value={notes} onChange={e=>setNotes(e.target.value)} />
           </div>
@@ -470,14 +473,9 @@ function computeSuggestedExpiryDate(name, expiresAt, purchasedAt){
   if(expiresAt) return expiresAt
 
   const baseDate = purchasedAt ? new Date(`${purchasedAt}T00:00:00`) : new Date()
-  const lowerName = (name || '').toLowerCase()
-
-  let days = 3
-  if(lowerName.includes('肉') || lowerName.includes('鶏') || lowerName.includes('牛') || lowerName.includes('豚') || lowerName.includes('魚')) days = 2
-  if(lowerName.includes('野菜') || lowerName.includes('キャベツ') || lowerName.includes('玉ねぎ') || lowerName.includes('にんじん') || lowerName.includes('トマト')) days = 5
-  if(lowerName.includes('牛乳') || lowerName.includes('ヨーグルト') || lowerName.includes('卵')) days = 7
-
+  
+  // 常に3日後を返す
   const next = new Date(baseDate)
-  next.setDate(next.getDate() + days)
+  next.setDate(next.getDate() + 3)
   return next.toISOString().slice(0, 10)
 }
