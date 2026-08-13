@@ -51,7 +51,19 @@ export default function ItemsPage(){
       console.error(error)
       return
     }
-    // 追加後は入力クリアして再取得
+    // 追加後: サーバ側で emoji が補完されるように Edge Function を呼び出して補完を依頼
+    try{
+      const functionsBase = import.meta.env.VITE_SUPABASE_FUNCTIONS_URL || 'https://ernmoosoaucausczssqz.functions.supabase.co'
+      await fetch(`${functionsBase}/assign-emoji`, {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({ id: data.id, name: data.name })
+      })
+    }catch(e){
+      console.error('Edge Function call failed', e)
+    }
+
+    // 入力クリアして再取得
     setName('')
     setQuantity('')
     setUnit('')
