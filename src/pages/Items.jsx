@@ -21,6 +21,7 @@ export default function ItemsPage(){
   const [purchasedAt, setPurchasedAt] = useState(todayString())
   const [expiresAt, setExpiresAt] = useState('')
   const [notes, setNotes] = useState('')
+  const [showHelpModal, setShowHelpModal] = useState(false)
 
   useEffect(()=>{
     fetchItems()
@@ -242,6 +243,11 @@ export default function ItemsPage(){
 
   const nearExpiryCount = filteredItems.filter(item => getExpiryState(item.expires_at) !== 'normal').length
 
+  const getWeekdayString = (dateStr) => {
+    if (!dateStr) return ''
+    return new Date(`${dateStr}T00:00:00`).toLocaleDateString('ja-JP', { weekday: 'short' })
+  }
+
   return (
     <div className="p-6 emoji-wallpaper min-h-screen">
       <div className="max-w-5xl mx-auto">
@@ -251,7 +257,12 @@ export default function ItemsPage(){
             <h1 className="text-2xl font-semibold">在庫一覧</h1>
             <p className="text-sm text-sky-700 mt-1">{filteredItems.length}件の食材 / 期限注意 {nearExpiryCount}件</p>
           </div>
-          <button onClick={handleLogout} className="bg-white/80 card-ghost px-3 py-1 rounded">ログアウト</button>
+          <div className="flex gap-2 items-center">
+            <button onClick={() => setShowHelpModal(true)} className="bg-gray-400 hover:bg-gray-500 text-white rounded-full w-10 h-10 flex items-center justify-center text-lg font-bold">
+              ？
+            </button>
+            <button onClick={handleLogout} className="bg-gray-700 hover:bg-gray-800 text-white px-4 py-2 rounded font-semibold">ログアウト</button>
+          </div>
         </div>
 
         <div className="mb-4 flex gap-2 items-center">
@@ -299,17 +310,16 @@ export default function ItemsPage(){
             <input className="border p-2 rounded" placeholder="数量" value={quantity} onChange={e=>setQuantity(e.target.value)} />
             <input className="border p-2 rounded" placeholder="単位" value={unit} onChange={e=>setUnit(e.target.value)} />
             <input className="border p-2 rounded" placeholder="保管場所" value={location} onChange={e=>setLocation(e.target.value)} />
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1">
               <input type="date" className="border p-2 rounded" value={purchasedAt} onChange={e=>setPurchasedAt(e.target.value)} />
-              {/* show weekday only when date selected */}
               {purchasedAt && (
-                <div className="text-sm text-gray-600">（{new Date(`${purchasedAt}T00:00:00`).toLocaleDateString('ja-JP', { weekday: 'short' })}）</div>
+                <span className="text-sm text-gray-600">（{getWeekdayString(purchasedAt)}）</span>
               )}
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1">
               <input type="date" className="border p-2 rounded" value={expiresAt} onChange={e=>setExpiresAt(e.target.value)} />
               {expiresAt && (
-                <div className="text-sm text-gray-600">（{new Date(`${expiresAt}T00:00:00`).toLocaleDateString('ja-JP', { weekday: 'short' })}）</div>
+                <span className="text-sm text-gray-600">（{getWeekdayString(expiresAt)}）</span>
               )}
             </div>
             <input className="md:col-span-3 border p-2 rounded" placeholder="メモ" value={notes} onChange={e=>setNotes(e.target.value)} />
@@ -374,6 +384,45 @@ export default function ItemsPage(){
           </div>
         )}
       </div>
+
+      {/* Help Modal */}
+      {showHelpModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg max-w-md w-full p-6 card-ghost">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-xl font-bold">アプリの使い方</h2>
+              <button onClick={() => setShowHelpModal(false)} className="text-gray-500 hover:text-gray-700 text-2xl leading-none">×</button>
+            </div>
+            <div className="text-sm text-gray-700 space-y-3">
+              <div>
+                <p className="font-semibold text-sky-700 mb-1">📝 食材を追加する</p>
+                <p>絵文字、食材名、数量、単位、保管場所、購入日、賞味期限、メモを入力して「追加」ボタンをクリック</p>
+              </div>
+              <div>
+                <p className="font-semibold text-sky-700 mb-1">🔍 食材を検索する</p>
+                <p>食材名、保管場所、またはメモのキーワードで検索できます</p>
+              </div>
+              <div>
+                <p className="font-semibold text-sky-700 mb-1">📅 期限で並び替える</p>
+                <p>「期限が近い順」「期限が遠い順」など、条件に合わせて並べ替え</p>
+              </div>
+              <div>
+                <p className="font-semibold text-sky-700 mb-1">✏️ 食材を編集する</p>
+                <p>食材の「編集」ボタンをクリックして、内容を変更してから「更新」をクリック</p>
+              </div>
+              <div>
+                <p className="font-semibold text-sky-700 mb-1">🗑️ 食材を削除する</p>
+                <p>不要な食材の「削除」ボタンをクリックして、確認画面で削除</p>
+              </div>
+              <div>
+                <p className="font-semibold text-sky-700 mb-1">⚠️ 期限の色</p>
+                <p>赤：賞味期限が1日以内 / 黄：3日以内</p>
+              </div>
+            </div>
+            <button onClick={() => setShowHelpModal(false)} className="mt-4 w-full bg-sky-600 hover:bg-sky-700 text-white py-2 rounded font-semibold">閉じる</button>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
