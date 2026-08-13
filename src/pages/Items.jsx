@@ -23,6 +23,13 @@ export default function ItemsPage(){
   const [notes, setNotes] = useState('')
   const [showHelpModal, setShowHelpModal] = useState(false)
 
+  // 保存場所のロケーション定義
+  const locationOptions = [
+    { label: '冷蔵庫', emoji: '❄️', color: 'bg-blue-50 border-blue-200' },
+    { label: '冷凍庫', emoji: '🧊', color: 'bg-cyan-50 border-cyan-200' },
+    { label: 'ストッカー', emoji: '📦', color: 'bg-amber-50 border-amber-200' }
+  ]
+
   useEffect(()=>{
     fetchItems()
     const id = setInterval(fetchItems, 60000)
@@ -309,7 +316,14 @@ export default function ItemsPage(){
 
             <input className="border p-2 rounded" placeholder="数量" value={quantity} onChange={e=>setQuantity(e.target.value)} />
             <input className="border p-2 rounded" placeholder="単位" value={unit} onChange={e=>setUnit(e.target.value)} />
-            <input className="border p-2 rounded" placeholder="保管場所" value={location} onChange={e=>setLocation(e.target.value)} />
+            <div className="flex items-center gap-2">
+              <select value={location} onChange={e=>setLocation(e.target.value)} className="border p-2 rounded bg-white flex-1">
+                <option value="">保管場所を選択</option>
+                {locationOptions.map(opt => (
+                  <option key={opt.label} value={opt.label}>{opt.emoji} {opt.label}</option>
+                ))}
+              </select>
+            </div>
             <div className="flex items-center gap-1">
               <input type="date" className="border p-2 rounded" value={purchasedAt} onChange={e=>setPurchasedAt(e.target.value)} />
               {purchasedAt && (
@@ -348,7 +362,7 @@ export default function ItemsPage(){
                const expiryBadge = expiry === 'danger' ? { icon: '❗', label: '期限切れ間近', className: 'bg-red-100 text-red-700' } : expiry === 'warning' ? { icon: '⏰', label: '期限注意', className: 'bg-yellow-100 text-yellow-700' } : null
 
                return (
-                 <div key={item.id} className={`p-3 sm:p-4 bg-white rounded-xl shadow-sm transition-shadow hover:shadow-md border border-slate-200 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between ${expiry === 'danger' ? 'border-l-4 border-red-400 bg-red-50' : expiry === 'warning' ? 'border-l-4 border-yellow-400 bg-yellow-50' : 'border-l'}`}>
+                 <div key={item.id} className={`p-3 sm:p-4 rounded-xl shadow-sm transition-shadow hover:shadow-md border-2 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between ${expiry === 'danger' ? 'bg-red-100 border-red-400' : expiry === 'warning' ? 'bg-yellow-50 border-yellow-400' : 'bg-white border-slate-200'}`}>
                    <div className="min-w-0 flex-1">
                      <div className="flex items-center gap-3 min-w-0">
                        <span className="w-10 h-10 rounded-full bg-sky-100 flex items-center justify-center text-xl flex-shrink-0">{item.emoji || '🍽️'}</span>
@@ -363,7 +377,10 @@ export default function ItemsPage(){
                      </div>
 
                      <div className="mt-1 text-sm text-gray-600 break-words">
-                       {item.quantity || ''}{item.unit ? item.unit : ''} - {item.location || '未設定'}
+                       {item.quantity || ''}{item.unit ? item.unit : ''} - {(() => {
+                         const locOpt = locationOptions.find(o => o.label === item.location)
+                         return locOpt ? `${locOpt.emoji} ${item.location}` : item.location || '未設定'
+                       })()}
                       </div>
                      {item.notes && <div className="text-xs text-gray-500 mt-1 break-words">{item.notes}</div>}
                    </div>
@@ -397,6 +414,7 @@ export default function ItemsPage(){
               <div>
                 <p className="font-semibold text-sky-700 mb-1">📝 食材を追加する</p>
                 <p>絵文字、食材名、数量、単位、保管場所、購入日、賞味期限、メモを入力して「追加」ボタンをクリック</p>
+                <p className="text-xs text-gray-600 mt-1">絵文字は自分で選ばずに登録すると、品名から推測して自動で選んで登録します</p>
               </div>
               <div>
                 <p className="font-semibold text-sky-700 mb-1">🔍 食材を検索する</p>
