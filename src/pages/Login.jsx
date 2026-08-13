@@ -21,8 +21,11 @@ export default function LoginPage(){
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-sky-50">
-      <div className="bg-white p-6 rounded shadow w-full max-w-sm">
+    <div className="min-h-screen flex items-center justify-center emoji-wallpaper">
+      <div className="bg-white/90 backdrop-blur-sm p-6 rounded shadow w-full max-w-sm card-ghost">
+        <div className="text-center mb-4">
+          <div className="text-2xl font-bold text-sky-700">食材在庫管理アプリ</div>
+        </div>
         <form onSubmit={handleSubmit}>
           <h1 className="text-xl font-semibold mb-4">ログイン</h1>
           {error && <div className="text-red-600 mb-2">{error}</div>}
