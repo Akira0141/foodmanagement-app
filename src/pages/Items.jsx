@@ -107,15 +107,18 @@ export default function ItemsPage(){
         {loading && <div>読み込み中...</div>}
         {!loading && (
           <div className="space-y-2">
-            {items.map(item => (
-              <div key={item.id} className={`p-3 bg-white rounded shadow flex items-center justify-between ${isExpiringSoon(item.expires_at)? 'border-l-4 border-red-400':''}`}>
-                <div>
-                  <div className="text-lg">{item.emoji || '🍽️'} {item.name}</div>
-                  <div className="text-sm text-gray-600">{item.quantity}{item.unit? item.unit: ''} - {item.location}</div>
+            {items.map(item => {
+              const expiry = getExpiryState(item.expires_at)
+              return (
+                <div key={item.id} className={`p-3 bg-white rounded shadow flex items-center justify-between ${expiry === 'danger' ? 'border-l-4 border-red-400 bg-red-50' : expiry === 'warning' ? 'border-l-4 border-yellow-400 bg-yellow-50' : ''}`}>
+                  <div>
+                    <div className="text-lg">{item.emoji || '🍽️'} {item.name}</div>
+                    <div className="text-sm text-gray-600">{item.quantity}{item.unit? item.unit: ''} - {item.location}</div>
+                  </div>
+                  <div className="text-sm text-gray-700">{item.expires_at? new Date(item.expires_at).toLocaleDateString(): '期限なし'}</div>
                 </div>
-                <div className="text-sm text-gray-700">{item.expires_at? new Date(item.expires_at).toLocaleDateString(): '期限なし'}</div>
-              </div>
-            ))}
+              )
+            })}
           </div>
         )}
       </div>
@@ -123,10 +126,12 @@ export default function ItemsPage(){
   )
 }
 
-function isExpiringSoon(dateStr){
-  if(!dateStr) return false
+function getExpiryState(dateStr){
+  if(!dateStr) return 'normal'
   const d = new Date(dateStr)
   const now = new Date()
   const diff = (d - now) / (1000*60*60*24)
-  return diff <= 3
+  if(diff <= 1) return 'danger'
+  if(diff <= 3) return 'warning'
+  return 'normal'
 }
