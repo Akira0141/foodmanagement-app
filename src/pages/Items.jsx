@@ -30,6 +30,9 @@ export default function ItemsPage(){
     { label: 'ストッカー', emoji: '📦', color: 'bg-amber-50 border-amber-200' }
   ]
 
+  // 単位のオプション定義
+  const unitOptions = ['個', 'g', 'ℓ', 'パック', 'ケース']
+
   useEffect(()=>{
     fetchItems()
     const id = setInterval(fetchItems, 60000)
@@ -310,7 +313,21 @@ export default function ItemsPage(){
             </div>
 
             <input className="border p-2 rounded" placeholder="数量" value={quantity} onChange={e=>setQuantity(e.target.value)} />
-            <input className="border p-2 rounded" placeholder="単位" value={unit} onChange={e=>setUnit(e.target.value)} />
+            <div className="flex items-center gap-2">
+              <input 
+                type="text"
+                list="unitList"
+                value={unit}
+                onChange={e => setUnit(e.target.value)}
+                placeholder="単位を入力または選択"
+                className="border p-2 rounded bg-white flex-1"
+              />
+              <datalist id="unitList">
+                {unitOptions.map(opt => (
+                  <option key={opt} value={opt}>{opt}</option>
+                ))}
+              </datalist>
+            </div>
             <div className="flex items-center gap-2">
               <input 
                 type="text"
