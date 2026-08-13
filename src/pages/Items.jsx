@@ -17,7 +17,7 @@ export default function ItemsPage(){
   const [emoji, setEmoji] = useState('')
   const [quantity, setQuantity] = useState('')
   const [unit, setUnit] = useState('')
-  const [location, setLocation] = useState('冷蔵庫')
+  const [location, setLocation] = useState('')
   const [purchasedAt, setPurchasedAt] = useState(todayString())
   const [expiresAt, setExpiresAt] = useState('')
   const [notes, setNotes] = useState('')
