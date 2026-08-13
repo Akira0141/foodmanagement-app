@@ -4,6 +4,9 @@ import { supabase } from '../lib/supabaseClient'
 export default function ItemsPage(){
   const [items, setItems] = useState([])
   const [loading, setLoading] = useState(true)
+  const [submitting, setSubmitting] = useState(false)
+  const [errorMessage, setErrorMessage] = useState('')
+  const [successMessage, setSuccessMessage] = useState('')
   const [name, setName] = useState('')
   const [quantity, setQuantity] = useState('')
   const [unit, setUnit] = useState('')
@@ -21,7 +24,19 @@ export default function ItemsPage(){
 
   async function fetchItems(){
     setLoading(true)
-    const { data, error } = await supabase.from('items').select('*').order('expires_at', { ascending: true })
+    const { data: userData, error: userError } = await supabase.auth.getUser()
+    if(userError || !userData?.user){
+      setItems([])
+      setLoading(false)
+      return
+    }
+
+    const { data, error } = await supabase
+      .from('items')
+      .select('*')
+      .eq('user_id', userData.user.id)
+      .order('expires_at', { ascending: true })
+
     if(error){
       console.error(error)
       setItems([])
@@ -33,10 +48,25 @@ export default function ItemsPage(){
 
   async function handleAdd(e){
     e.preventDefault()
+    setErrorMessage('')
+    setSuccessMessage('')
     // 簡易バリデーション
-    if(!name) return
+    if(!name){
+      setErrorMessage('食材名を入力してください。')
+      return
+    }
+    setSubmitting(true)
+
+    const { data: userData, error: userError } = await supabase.auth.getUser()
+    if(userError || !userData?.user){
+      setErrorMessage('ログイン状態を確認できませんでした。再度ログインしてください。')
+      setSubmitting(false)
+      return
+    }
+
     // もし expiresAt が空なら null を入れる。サーバ側でデフォルト提案することも可能
     const payload = {
+      user_id: userData.user.id,
       name,
       quantity: quantity || null,
       unit: unit || null,
@@ -49,6 +79,8 @@ export default function ItemsPage(){
     const { data, error } = await supabase.from('items').insert([payload]).select().single()
     if(error){
       console.error(error)
+      setErrorMessage(error.message || '登録に失敗しました。Supabase の items テーブルと RLS を確認してください。')
+      setSubmitting(false)
       return
     }
     // 追加後: サーバ側で emoji が補完されるように Edge Function を呼び出して補完を依頼
@@ -71,7 +103,9 @@ export default function ItemsPage(){
     setPurchasedAt('')
     setExpiresAt('')
     setNotes('')
-    fetchItems()
+    setSuccessMessage('追加しました。')
+    setSubmitting(false)
+    await fetchItems()
   }
 
   async function handleLogout(){
@@ -90,6 +124,12 @@ export default function ItemsPage(){
         </div>
 
         <form onSubmit={handleAdd} className="mb-4 bg-white p-4 rounded shadow">
+          {(errorMessage || successMessage) && (
+            <div className={`mb-3 rounded p-2 text-sm ${errorMessage ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}`}>
+              {errorMessage || successMessage}
+            </div>
+          )}
+
           <div className="grid grid-cols-3 gap-2">
             <input className="col-span-2 border p-2 rounded" placeholder="食材名" value={name} onChange={e=>setName(e.target.value)} />
             <input className="border p-2 rounded" placeholder="数量" value={quantity} onChange={e=>setQuantity(e.target.value)} />
@@ -100,7 +140,9 @@ export default function ItemsPage(){
             <input className="col-span-3 border p-2 rounded" placeholder="メモ" value={notes} onChange={e=>setNotes(e.target.value)} />
           </div>
           <div className="mt-2">
-            <button className="bg-sky-600 text-white px-4 py-2 rounded">追加</button>
+            <button disabled={submitting} className="bg-sky-600 text-white px-4 py-2 rounded disabled:opacity-60">
+              {submitting ? '追加中...' : '追加'}
+            </button>
           </div>
         </form>
 
