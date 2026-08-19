@@ -304,7 +304,7 @@ export default function ItemsPage(){
                 <select value={emoji} onChange={e=>setEmoji(e.target.value)} className="border p-2 rounded bg-white">
                   {(() => {
                     const suggested = pickEmoji(name)
-                    const options = [suggested, '🍽️','🥗','🥩','🍅','🍞','🐟','🥚','🥛','🧂','🧀','🥬','🧅']
+                    const options = [suggested, '🍽️','🥗','🥩','🍅','🍞','🐟','🥚','🥛','🧂','🧀','🥬','🧅','🍜']
                     return options.map((o, i) => <option key={i} value={o}>{o}</option>)
                   })()}
                 </select>

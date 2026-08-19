@@ -31,6 +31,7 @@ function pickEmojiLocal(name: string){
     { keywords: ['米','ごはん'], emoji: '🍚' },
     { keywords: ['豆腐'], emoji: '🍱' },
     { keywords: ['チーズ'], emoji: '🧀' },
+    { keywords: ['うどん','udon','そうめん','そば','soba','蕎麦','素麺','ラーメン','らーめん','ramen','麺'], emoji: '🍜' },
     { keywords: ['砂糖','しお','塩'], emoji: '🧂' },
     { keywords: ['納豆'], emoji: '🍱' },
   ]
