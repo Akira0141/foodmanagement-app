@@ -18,6 +18,7 @@ const map = [
   { keywords: ['米', 'ごはん'], emoji: '🍚' },
   { keywords: ['豆腐'], emoji: '🍱' },
   { keywords: ['うどん', 'udon', 'そうめん', 'そば', 'soba', '蕎麦', '素麺', 'ラーメン', 'らーめん', 'ramen', '麺'], emoji: '🍜' },
+  { keywords: ['えのき','えりんぎ','エリンギ','しめじ','まいたけ'], emoji: '🍄' },
 ]
 
 export function pickEmoji(name){

@@ -34,6 +34,7 @@ function pickEmojiLocal(name: string){
     { keywords: ['うどん','udon','そうめん','そば','soba','蕎麦','素麺','ラーメン','らーめん','ramen','麺'], emoji: '🍜' },
     { keywords: ['砂糖','しお','塩'], emoji: '🧂' },
     { keywords: ['納豆'], emoji: '🍱' },
+    { keywords: ['えのき','えりんぎ','エリンギ','しめじ','まいたけ'], emoji: '🍄' },
   ]
   for(const entry of map){
     for(const kw of entry.keywords){
