@@ -38,6 +38,9 @@ function pickEmojiLocal(name: string){
     { keywords: ['砂糖','しお','塩'], emoji: '🧂' },
     { keywords: ['納豆'], emoji: '🍱' },
     { keywords: ['えのき','えりんぎ','エリンギ','しめじ','まいたけ'], emoji: '🍄' },
+    { keywords: ['じゃがいも','ジャガイモ','potato'], emoji: '🥔' },
+    { keywords: ['きゅうり','キュウリ','cucumber'], emoji: '🥒' },
+    { keywords: ['ブロッコリー','broccoli'], emoji: '🥦' },
   ]
   for(const entry of map){
     for(const kw of entry.keywords){

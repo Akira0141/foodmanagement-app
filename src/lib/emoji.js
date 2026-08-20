@@ -22,7 +22,10 @@ const map = [
   { keywords: ['豆腐'], emoji: '🍱' },
   { keywords: ['うどん', 'udon', 'そうめん', 'そば', 'soba', '蕎麦', '素麺', 'ラーメン', 'らーめん', 'ramen', '麺'], emoji: '🍜' },
   { keywords: ['えのき','えりんぎ','エリンギ','しめじ','まいたけ'], emoji: '🍄' },
-]
+  { keywords: ['じゃがいも','ジャガイモ','potato'], emoji: '🥔' },
+  { keywords: ['きゅうり','キュウリ','cucumber'], emoji: '🥒' },
+  { keywords: ['ブロッコリー','broccoli'], emoji: '🥦' },
+    ]
 
 export function pickEmoji(name){
   if(!name) return '🍽️'
